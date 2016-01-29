@@ -1,0 +1,32 @@
+{
+  "name": "pdfi-node",
+  "version": "0.0.1",
+  "description": "pdfi CLI for Node",
+  "keywords": [
+    "pdf",
+    "parser",
+    "extract",
+    "text"
+  ],
+  "homepage": "https://github.com/chbrown/pdfi-node",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chbrown/pdfi-node.git"
+  },
+  "license": "MIT",
+  "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
+  "dependencies": {
+    "chalk": "*",
+    "lexing": "*",
+    "loge": "*",
+    "pdfi": "*",
+    "yargs": "*"
+  },
+  "devDependencies": {
+    "declarations": "*",
+    "typescript": "*"
+  },
+  "bin": {
+    "pdfi": "bin/pdfi-node.js"
+  }
+}

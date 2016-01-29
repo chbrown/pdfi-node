@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES5"
+  },
+  "files": [
+    "node_modules/declarations/chalk/chalk.d.ts",
+    "node_modules/declarations/node/node.d.ts",
+    "node_modules/declarations/yargs/yargs.d.ts",
+    "bin/pdfi-node.ts",
+    "index.ts",
+    "source.ts"
+  ]
+}
