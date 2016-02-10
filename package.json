@@ -20,6 +20,7 @@
     "lexing": "*",
     "loge": "*",
     "pdfi": "*",
+    "tarry": "*",
     "yargs": "*"
   },
   "devDependencies": {
