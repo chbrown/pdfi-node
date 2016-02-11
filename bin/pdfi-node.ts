@@ -46,7 +46,7 @@ const commands: Command[] = [
     id: 'xref',
     description: 'Print cross references as JSON',
     run(filename: string) {
-      var cross_references = readFileSync(filename, {type: 'xref'});
+      const cross_references = readFileSync(filename, {type: 'xref'});
       stdout(JSON.stringify(cross_references));
     },
   },
@@ -56,14 +56,14 @@ const commands: Command[] = [
     example: ['pdfi objects Sci.pdf 1 14:0 106', 'print objects "1:0", "14:0", and "106:0"'],
     run(filename: string, argv: any) {
       const pdf = readFileSync(filename); // :PDF
-      const references = argv._.slice(1).map(models.IndirectReference.fromString);
+      const references = argv._.slice(1).map(IndirectReference.fromString);
       references.forEach(reference => {
         stderr(reference.toString());
-        var object = new models.Model(pdf, reference).object
+        const object = new Model(pdf, reference).object
 
-        if (argv.decode && models.ContentStream.isContentStream(object)) {
+        if (argv.decode && ContentStream.isContentStream(object)) {
           // the buffer getter handles all the decoding
-          const buffer = new models.ContentStream(pdf, object).buffer;
+          const buffer = new ContentStream(pdf, object).buffer;
           process.stdout.write(buffer);
           return;
         }
@@ -104,7 +104,7 @@ export function main() {
   commands.forEach(command => {
     argvparser = argvparser.command(command.id, command.description);
     if (command.example) {
-      let [cmd, desc] = command.example;
+      const [cmd, desc] = command.example;
       argvparser = argvparser.example(cmd, desc);
     }
   });
@@ -113,20 +113,20 @@ export function main() {
   pdfi.setLoggerLevel(argv.verbose ? Level.debug : Level.info);
   if (argv.verbose) {
     // if set to verbose, use chalk regardless of whether stdout is a TTY
-    chalk.enabled = true;
+    (<any>chalk).enabled = true;
   }
 
   if (argv.help) {
     argvparser.showHelp();
   }
   else if (argv.version) {
-    var package_metadata = require('pdfi/package');
+    const package_metadata = require('pdfi/package');
     console.log(package_metadata.version);
   }
   else {
     argv = argvparser.demand(2).argv;
-    var [command_id, filename] = argv._;
-    var command = commands.filter(command => command.id === command_id)[0];
+    const [command_id, filename] = argv._;
+    const command = commands.filter(command => command.id === command_id)[0];
     if (command === undefined) {
       stderr(`Unrecognized command: "${command_id}"`);
       argvparser.showHelp();

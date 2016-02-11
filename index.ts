@@ -4,7 +4,7 @@ import {FileSystemSource} from './source';
 import {readSourceSync} from 'pdfi';
 
 export function readFileSync(filename: string, options = {type: 'string'}) {
-  var source: Source = FileSystemSource.open(filename);
+  const source: Source = FileSystemSource.open(filename);
   return readSourceSync(source, options);
 }
 
@@ -17,7 +17,7 @@ export function readFile(filename: string,
                          options = {type: 'string'},
                          callback: (error: Error, data: any) => void) {
   setImmediate(() => {
-    var data = readFileSync(filename, options);
+    const data = readFileSync(filename, options);
     callback(null, data);
   });
 }

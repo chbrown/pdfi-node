@@ -8,7 +8,7 @@ export class FileSystemSource implements Source {
   constructor(private fd: number) { }
 
   static open(path: string): FileSystemSource {
-    var fd = openSync(path, 'r');
+    const fd = openSync(path, 'r');
     return new FileSystemSource(fd);
   }
 
@@ -35,11 +35,11 @@ export class FileSystemSource implements Source {
   Buffer shorter than `length` iff EOF has been reached.
   */
   readBuffer(length: number, position: number): LexingBuffer {
-    var buffer = new Buffer(length);
+    let buffer = new Buffer(length);
     if (length === 0) {
       return buffer;
     }
-    var bytesRead = readSync(this.fd, buffer, 0, length, position);
+    const bytesRead = readSync(this.fd, buffer, 0, length, position);
     if (bytesRead < length) {
       buffer = buffer.slice(0, bytesRead);
     }
