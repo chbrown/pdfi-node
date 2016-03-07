@@ -14,3 +14,6 @@ $(BIN)/tsc:
 
 %.js: %.ts $(BIN)/tsc
 	$(BIN)/tsc
+
+compile:
+	$(BIN)/tsc
