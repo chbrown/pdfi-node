@@ -2,41 +2,11 @@
 import * as optimist from 'optimist';
 import {logger, Level} from 'loge';
 import * as chalk from 'chalk';
-import {tuplesToObject} from 'tarry';
 
-import * as pdfi from 'pdfi';
+import {setLoggerLevel, simplify} from 'pdfi';
 import {Model, IndirectReference, ContentStream, Catalog} from 'pdfi/models';
 
 import {readFileSync} from '../index';
-
-function simplify(value: any, seen: any[] = []): any {
-  if (value === undefined || value === null) {
-    return value;
-  }
-  else if (value instanceof Model) {
-    const object = (<Model>value).object;
-    return simplify(object, seen);
-  }
-  else if (Buffer.isBuffer(value)) {
-    return (<Buffer>value).toString('utf8');
-  }
-  else if (Array.isArray(value)) {
-    if (seen.indexOf(value) > -1) {
-      return '[Circular Array]';
-    }
-    seen.push(value);
-    return value.map(item => simplify(item, seen));
-  }
-  else if (typeof value === 'object') {
-    if (seen.indexOf(value) > -1) {
-      return '[Circular Object]';
-    }
-    seen.push(value);
-    return tuplesToObject(<any>Object.keys(value).map(key => ([key, simplify(value[key], seen)])));
-  }
-  // catch-all
-  return value;
-}
 
 const stderr = (line: string) => process.stderr.write(`${chalk.magenta(line)}\n`);
 const stdout = (line: string) => process.stdout.write(`${line}\n`);
@@ -154,7 +124,7 @@ export function main() {
   argvparser = argvparser.usage(usage);
 
   let argv = argvparser.argv;
-  pdfi.setLoggerLevel(argv.verbose ? Level.debug : Level.info);
+  setLoggerLevel(argv.verbose ? Level.debug : Level.info);
   if (argv.verbose) {
     // if set to verbose, use chalk regardless of whether stdout is a TTY
     (<any>chalk).enabled = true;
