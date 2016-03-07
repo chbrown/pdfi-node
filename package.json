@@ -19,9 +19,9 @@
     "chalk": "*",
     "lexing": "*",
     "loge": "*",
+    "optimist": "*",
     "pdfi": "*",
-    "tarry": "*",
-    "yargs": "*"
+    "tarry": "*"
   },
   "devDependencies": {
     "declarations": "*",

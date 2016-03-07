@@ -1,12 +1,42 @@
 #!/usr/bin/env node
-import * as yargs from 'yargs';
+import * as optimist from 'optimist';
 import {logger, Level} from 'loge';
 import * as chalk from 'chalk';
+import {tuplesToObject} from 'tarry';
 
 import * as pdfi from 'pdfi';
-import * as models from 'pdfi/models';
+import {Model, IndirectReference, ContentStream, Catalog} from 'pdfi/models';
 
 import {readFileSync} from '../index';
+
+function simplify(value: any, seen: any[] = []): any {
+  if (value === undefined || value === null) {
+    return value;
+  }
+  else if (value instanceof Model) {
+    const object = (<Model>value).object;
+    return simplify(object, seen);
+  }
+  else if (Buffer.isBuffer(value)) {
+    return (<Buffer>value).toString('utf8');
+  }
+  else if (Array.isArray(value)) {
+    if (seen.indexOf(value) > -1) {
+      return '[Circular Array]';
+    }
+    seen.push(value);
+    return value.map(item => simplify(item, seen));
+  }
+  else if (typeof value === 'object') {
+    if (seen.indexOf(value) > -1) {
+      return '[Circular Object]';
+    }
+    seen.push(value);
+    return tuplesToObject(<any>Object.keys(value).map(key => ([key, simplify(value[key], seen)])));
+  }
+  // catch-all
+  return value;
+}
 
 const stderr = (line: string) => process.stderr.write(`${chalk.magenta(line)}\n`);
 const stdout = (line: string) => process.stdout.write(`${line}\n`);
@@ -38,8 +68,9 @@ const commands: Command[] = [
     id: 'metadata',
     description: 'Print trailer as JSON',
     run(filename: string) {
-      const metadata = readFileSync(filename, {type: 'metadata'});
-      stdout(JSON.stringify(metadata));
+      const trailer = readFileSync(filename, {type: 'metadata'});
+      const trailerJSON = simplify(trailer);
+      stdout(JSON.stringify(trailerJSON));
     },
   },
   {
@@ -86,28 +117,41 @@ const commands: Command[] = [
 ];
 
 export function main() {
-  let argvparser = yargs
-    .usage('Usage: pdfi <command> <filename> [<args>]')
-    .describe({
-      // 'objects' options
-      decode: 'decode content streams',
-      help: 'print this help message',
-      verbose: 'print extra output',
-    })
-    .alias({
-      help: 'h',
-      verbose: 'v',
-    })
-    .string('_')
-    .boolean(['help', 'verbose', 'decode']);
+  let argvparser = optimist
+  .options({
+    help: {
+      alias: 'h',
+      describe: 'print this help message',
+      type: 'boolean',
+    },
+    verbose: {
+      alias: 'v',
+      describe: 'print extra output',
+      type: 'boolean',
+    },
+    version: {
+      describe: 'print version',
+      type: 'boolean',
+    },
+    decode: {
+      describe: 'decode content streams',
+      type: 'boolean',
+    },
+  })
+  .string('_');
 
-  commands.forEach(command => {
-    argvparser = argvparser.command(command.id, command.description);
-    if (command.example) {
-      const [cmd, desc] = command.example;
-      argvparser = argvparser.example(cmd, desc);
-    }
-  });
+  // TODO: also handle command.example
+  // if (command.example) {
+  //   const [cmd, desc] = command.example;
+  //   argvparser = argvparser.example(cmd, desc);
+  // }
+  const usage = [
+    'Usage: pdfi <command> <filename> [<args>]',
+    '',
+    'Commands:',
+    ...commands.map(command => `  ${command.id}: ${command.description}`),
+  ].join('\n');
+  argvparser = argvparser.usage(usage);
 
   let argv = argvparser.argv;
   pdfi.setLoggerLevel(argv.verbose ? Level.debug : Level.info);
