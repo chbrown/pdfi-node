@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import * as optimist from 'optimist';
-import {logger, Level} from 'loge';
+import {Level} from 'loge';
 import * as chalk from 'chalk';
 
-import {setLoggerLevel, simplify} from 'pdfi';
+import {setLoggerLevel, simplify, PDF} from 'pdfi';
 import {Model, IndirectReference, ContentStream, Catalog} from 'pdfi/models';
 
 import {readFileSync} from '../index';
@@ -38,9 +38,12 @@ const commands: Command[] = [
     id: 'metadata',
     description: 'Print trailer as JSON',
     run(filename: string) {
-      const trailer = readFileSync(filename, {type: 'metadata'});
-      const trailerJSON = simplify(trailer);
-      stdout(JSON.stringify(trailerJSON));
+      const pdf: PDF = readFileSync(filename, {type: 'pdf'});
+      const {Size, Root, Info} = pdf.trailer;
+      for (let key in Info) {
+        Info[key] = new Model(pdf, Info[key]).object;
+      }
+      stdout(JSON.stringify({Size, Root: Root.toJSON(), Info: simplify(Info)}));
     },
   },
   {
@@ -56,34 +59,26 @@ const commands: Command[] = [
     description: 'Print specific objects',
     example: ['pdfi objects Sci.pdf 1 14:0 106', 'print objects "1:0", "14:0", and "106:0"'],
     run(filename: string, argv: any) {
-      const pdf = readFileSync(filename); // :PDF
-      const references = argv._.slice(1).map(IndirectReference.fromString);
+      const pdf: PDF = readFileSync(filename, {type: 'pdf'});
+      const args: string[] = argv._.slice(2);
+      const references = args.map(IndirectReference.fromString);
       references.forEach(reference => {
-        stderr(reference.toString());
-        const object = new Model(pdf, reference).object
+        const cross_reference = pdf.findCrossReference(reference.object_number, reference.generation_number);
+        stderr(`${reference.toString()} [offset=${cross_reference.offset}]`);
+        const object = new Model(pdf, reference).object;
 
         if (argv.decode && ContentStream.isContentStream(object)) {
           // the buffer getter handles all the decoding
           const buffer = new ContentStream(pdf, object).buffer;
           process.stdout.write(buffer);
-          return;
         }
         else {
-          stdout(JSON.stringify(object));
+          const objectJSON = simplify(object);
+          stdout(JSON.stringify(objectJSON));
         }
       });
     },
   },
-  // {
-  //   id: 'pages',
-  //   description: 'Print content for all pages',
-  //   run(filename: string) {
-  //     pdf.pages.forEach((page, i, pages) => {
-  //       stderr(`Page ${i} of ${pages.length}`);
-  //       stdout(page.joinContents(' '));
-  //     });
-  //   },
-  // },
 ];
 
 export function main() {
@@ -127,7 +122,7 @@ export function main() {
   setLoggerLevel(argv.verbose ? Level.debug : Level.info);
   if (argv.verbose) {
     // if set to verbose, use chalk regardless of whether stdout is a TTY
-    (<any>chalk).enabled = true;
+    chalk.enabled = true;
   }
 
   if (argv.help) {
