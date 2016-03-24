@@ -17,3 +17,6 @@ $(BIN)/tsc:
 
 compile:
 	$(BIN)/tsc
+
+dev:
+	$(BIN)/tsc -w
