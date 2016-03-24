@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
     "module": "commonjs",
     "target": "ES5"
   },
@@ -8,8 +7,6 @@
     "node_modules/declarations/chalk/chalk.d.ts",
     "node_modules/declarations/node/node.d.ts",
     "node_modules/declarations/optimist/optimist.d.ts",
-    "node_modules/declarations/pako/pako.d.ts",
-    "node_modules/declarations/unorm/unorm.d.ts",
     "bin/pdfi-node.ts",
     "index.ts",
     "source.ts"
