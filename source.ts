@@ -1,5 +1,5 @@
 import {openSync, readSync, fstatSync, closeSync} from 'fs';
-import {Buffer as LexingBuffer, Source} from 'lexing';
+import {Source} from 'lexing';
 
 export class FileSystemSource implements Source {
   /**
@@ -26,7 +26,7 @@ export class FileSystemSource implements Source {
   > position is an integer specifying where to begin reading from in the file.
   > If position is null, data will be read from the current file position.
   */
-  read(buffer: LexingBuffer, offset: number, length: number, position: number): number {
+  read(buffer: Buffer, offset: number, length: number, position: number): number {
     return readSync(this.fd, <any>buffer, offset, length, position);
   }
 
@@ -34,7 +34,7 @@ export class FileSystemSource implements Source {
   Read `length` bytes of the underlying file as a Buffer. May return a
   Buffer shorter than `length` iff EOF has been reached.
   */
-  readBuffer(length: number, position: number): LexingBuffer {
+  readBuffer(length: number, position: number): Buffer {
     let buffer = new Buffer(length);
     if (length === 0) {
       return buffer;
