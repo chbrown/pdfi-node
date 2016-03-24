@@ -1,6 +1,6 @@
 {
   "name": "pdfi-node",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "pdfi CLI for Node",
   "keywords": [
     "pdf",
