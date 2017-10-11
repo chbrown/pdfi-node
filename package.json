@@ -16,15 +16,15 @@
   "license": "MIT",
   "author": "Christopher Brown <io@henrian.com> (http://henrian.com)",
   "dependencies": {
-    "chalk": "*",
-    "lexing": "*",
-    "loge": "*",
-    "optimist": "*",
-    "pdfi": "*"
+    "chalk": "1.1.1",
+    "lexing": "0.8.1",
+    "loge": "1.0.4",
+    "optimist": "0.6.1",
+    "pdfi": "0.9.3"
   },
   "devDependencies": {
-    "declarations": "*",
-    "typescript": "*"
+    "declarations": "0.1.16",
+    "typescript": "1.8.10"
   },
   "bin": {
     "pdfi": "bin/pdfi-node.js"
