@@ -122,7 +122,7 @@ export function main() {
   setLoggerLevel(argv.verbose ? Level.debug : Level.info);
   if (argv.verbose) {
     // if set to verbose, use chalk regardless of whether stdout is a TTY
-    chalk.enabled = true;
+    (chalk as any).enabled = true;
   }
 
   if (argv.help) {
