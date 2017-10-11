@@ -23,8 +23,10 @@
     "pdfi": "0.9.3"
   },
   "devDependencies": {
-    "declarations": "0.1.16",
-    "typescript": "1.8.10"
+    "@types/chalk": "0.4.31",
+    "@types/node": "8.0.34",
+    "@types/optimist": "0.0.29",
+    "typescript": "2.5.3"
   },
   "bin": {
     "pdfi": "bin/pdfi-node.js"
