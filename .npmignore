@@ -1,5 +1,4 @@
-bin/pdfi-node.ts
-index.ts
-source.ts
-Makefile
+/source.ts
+/index.ts
+/bin/pdfi-node.ts
 tsconfig.json
